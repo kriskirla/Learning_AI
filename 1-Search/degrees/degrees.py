@@ -90,9 +90,34 @@ def shortest_path(source, target):
 
     If no possible path, returns None.
     """
+    # Use BFS
+    frontier = QueueFrontier()
+    frontier.add(Node(source, None, None))
 
-    # TODO
-    raise NotImplementedError
+    explored = []
+
+    # Loop until frontier is empty
+    while not frontier.empty():
+        node = frontier.remove()
+
+        # If target is found, loop back all the way to parent
+        if node.state == target:
+            res = []
+            while node.parent != None:
+                res.insert(0, (node.action, node.state))
+                node = node.parent
+            return res
+        
+        # Find set of movies source was starred in
+        # Then add all stars within those movies to Frontier
+        for movie_id in people[node.state]['movies']:
+            for star_id in movies[movie_id]['stars']:
+                # Check if explored already
+                if (movie_id, star_id) not in explored:
+                    frontier.add(Node(star_id, node, movie_id))
+                    explored.append((movie_id, star_id))
+
+    return None
 
 
 def person_id_for_name(name):
